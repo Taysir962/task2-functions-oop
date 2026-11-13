@@ -1,0 +1,24 @@
+[
+    {
+        "order_id": "ORD-001",
+        "customer_name": "Ahmad Ali",
+        "items": [
+            {"product_name": "Laptop", "price": 500, "quantity": 1},
+            {"product_name": "Mouse", "price": 20, "quantity": 2}
+        ]
+    },
+    {
+        "order_id": "ORD-002",
+        "customer_name": "Sara Khaled",
+        "items": [
+            {"product_name": "Keyboard", "price": 50, "quantity": 1}
+        ]
+    },
+    {
+        "order_id": "ORD-003",
+        "customer_name": "Invalid Customer",
+        "items": [
+            {"product_name": "Error Item", "price": -10, "quantity": 1}
+        ]
+    }
+]
