@@ -1,4 +1,3 @@
-# functions/exercises.py
 
 # F1: Rewrites from Week 1 exercises
 def classify_number(n):
