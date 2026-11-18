@@ -1,4 +1,5 @@
 [
+<<<<<<< HEAD
     {
         "id": 1,
         "customer": "Sara",
@@ -81,3 +82,55 @@
         ]
     }
 ]
+=======
+  {
+    "id": 1,
+    "customer": "Sara",
+    "items": [
+      {"product": "Pen", "price": 1.5, "qty": 4},
+      {"product": "Notebook", "price": 3.25, "qty": 2}
+    ]
+  },
+  {
+    "id": 2,
+    "customer": "Omar",
+    "items": [
+      {"product": "Bag", "price": 25.0, "qty": 1}
+    ]
+  },
+  {
+    "id": 3,
+    "customer": "Sara",
+    "items": [
+      {"product": "Calculator", "price": 15.0, "qty": 1},
+      {"product": "Pen", "price": 1.5, "qty": 2}
+    ]
+  },
+  {
+    "id": 4,
+    "customer": "",
+    "items": [
+      {"product": "Pen", "price": 1.5, "qty": 1}
+    ]
+  },
+  {
+    "id": 5,
+    "customer": "Laila",
+    "items": [
+      {"product": "Bag", "price": -25.0, "qty": 1}
+    ]
+  },
+  {
+    "id": 6,
+    "customer": "Ali",
+    "items": []
+  },
+  {
+    "id": 7,
+    "customer": "Zaid",
+    "items": [
+      {"product": "Pen", "price": 1.5, "qty": "two"}
+    ]
+  }
+]
+>>>>>>> 57e80aff93691fc7fe485bff439df4f3d7f45ac2
