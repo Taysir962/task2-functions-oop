@@ -13,3 +13,9 @@
       return total
   result = add_bonus(5)
   print(total, result)
+ ## 3. AI Tools Usage Disclosure
+AI assistance (Google Gemini) was used during the development of this project for:
+- **SQLite Database Integration:** Designing the relational schema (`orders` and `order_items` tables) in `create_db.py` and implementing the database reader in `order_manager/manager.py`.
+- **Report Formatting & Troubleshooting:** Aligning the CLI output format in `order_manager/main.py` with the required specification and resolving local Python/Git execution issues.
+
+All code was reviewed, tested locally, and verified before submission. 
