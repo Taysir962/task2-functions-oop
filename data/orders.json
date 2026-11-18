@@ -1,24 +1,51 @@
 [
-    {
-        "order_id": "ORD-001",
-        "customer_name": "Ahmad Ali",
-        "items": [
-            {"product_name": "Laptop", "price": 500, "quantity": 1},
-            {"product_name": "Mouse", "price": 20, "quantity": 2}
-        ]
-    },
-    {
-        "order_id": "ORD-002",
-        "customer_name": "Sara Khaled",
-        "items": [
-            {"product_name": "Keyboard", "price": 50, "quantity": 1}
-        ]
-    },
-    {
-        "order_id": "ORD-003",
-        "customer_name": "Invalid Customer",
-        "items": [
-            {"product_name": "Error Item", "price": -10, "quantity": 1}
-        ]
-    }
+  {
+    "id": 1,
+    "customer": "Sara",
+    "items": [
+      {"product": "Pen", "price": 1.5, "qty": 4},
+      {"product": "Notebook", "price": 3.25, "qty": 2}
+    ]
+  },
+  {
+    "id": 2,
+    "customer": "Omar",
+    "items": [
+      {"product": "Bag", "price": 25.0, "qty": 1}
+    ]
+  },
+  {
+    "id": 3,
+    "customer": "Sara",
+    "items": [
+      {"product": "Calculator", "price": 15.0, "qty": 1},
+      {"product": "Pen", "price": 1.5, "qty": 2}
+    ]
+  },
+  {
+    "id": 4,
+    "customer": "",
+    "items": [
+      {"product": "Pen", "price": 1.5, "qty": 1}
+    ]
+  },
+  {
+    "id": 5,
+    "customer": "Laila",
+    "items": [
+      {"product": "Bag", "price": -25.0, "qty": 1}
+    ]
+  },
+  {
+    "id": 6,
+    "customer": "Ali",
+    "items": []
+  },
+  {
+    "id": 7,
+    "customer": "Zaid",
+    "items": [
+      {"product": "Pen", "price": 1.5, "qty": "two"}
+    ]
+  }
 ]
