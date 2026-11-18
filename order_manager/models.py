@@ -1,35 +1,47 @@
-
 from utils import format_price
+
 
 class OrderItem:
     """Represents an item within an order."""
-    def __init__(self, product_name, price, quantity):
-        if not product_name or not isinstance(product_name, str):
-            raise ValueError("Product name must be a non-empty string.")
-        if price < 0 or quantity < 0:
-            raise ValueError("Price and quantity must be non-negative.")
-        
-        self.product_name = product_name
-        self.price = price
-        self.quantity = quantity
+
+    def __init__(self, product, price, qty):
+        if not product or not isinstance(product, str) or not product.strip():
+            raise ValueError("product name is empty")
+
+        if (
+            not isinstance(price, (int, float))
+            or isinstance(price, bool)
+            or price <= 0
+        ):
+            raise ValueError(f"price must be positive ({product})")
+
+        if not isinstance(qty, int) or isinstance(qty, bool) or qty <= 0:
+            raise ValueError(f"quantity must be a positive whole number ({product})")
+
+        self.product = product.strip()
+        self.price = float(price)
+        self.qty = qty
 
     def total_price(self):
-        """Returns the total price for this item (price * quantity)."""
-        return self.price * self.quantity
+        """Returns the total price for this item (price * qty)."""
+        return self.price * self.qty
 
 
 class Order:
     """Represents an order containing multiple items and customer info."""
-    def __init__(self, order_id, customer_name, items):
-        if not order_id or not isinstance(order_id, str):
-            raise ValueError("Order ID must be a non-empty string.")
-        if not customer_name or not isinstance(customer_name, str):
-            raise ValueError("Customer name must be a non-empty string.")
-        if not items or not isinstance(items, list):
-            raise ValueError("Order must contain a list of items.")
 
-        self.order_id = order_id
-        self.customer_name = customer_name
+    def __init__(self, order_id, customer, items):
+        if not isinstance(order_id, int) or isinstance(order_id, bool) or order_id <= 0:
+            raise ValueError("order id must be a positive integer")
+
+        if not isinstance(customer, str) or not customer.strip():
+            raise ValueError("customer name is empty")
+
+        if not items or not isinstance(items, list):
+            raise ValueError("order has no items")
+
+        self.id = order_id
+        self.customer = customer.strip()
         self.items = items
 
     def total_amount(self):
@@ -37,4 +49,4 @@ class Order:
         return sum(item.total_price() for item in self.items)
 
     def __str__(self):
-        return f"Order {self.order_id} by {self.customer_name} - Total: {format_price(self.total_amount())}"
+        return f"Order {self.id} by {self.customer} - Total: {format_price(self.total_amount())}"

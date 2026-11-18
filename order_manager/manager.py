@@ -1,44 +1,103 @@
-
 import json
+import os
+import sqlite3
+import sys
 from models import Order, OrderItem
 
+
 class OrderManager:
-    """Manages loading orders from JSON and computing statistics and analytics."""
+    """Manages loading orders from SQLite DB or JSON and computing statistics."""
+
     def __init__(self, filepath):
         self.filepath = filepath
         self.orders = []
         self.rejected_orders = []
         self.load_data()
 
-    def load_data(self):
-        """Loads orders from JSON file, separating valid and invalid/rejected orders."""
-        try:
-            with open(self.filepath, 'r', encoding='utf-8') as f:
-                data = json.load(f)
-                
-            for raw_order in data:
-                try:
-                    order_id = raw_order.get("order_id")
-                    customer_name = raw_order.get("customer_name")
-                    raw_items = raw_order.get("items", [])
-                    
-                    items = []
-                    for item in raw_items:
-                        items.append(OrderItem(
-                            item.get("product_name"),
-                            item.get("price", 0),
-                            item.get("quantity", 0)
-                        ))
-                    
-                    order = Order(order_id, customer_name, items)
-                    self.orders.append(order)
-                except (ValueError, TypeError) as e:
-                    self.rejected_orders.append({
-                        "raw_data": raw_order,
-                        "reason": str(e)
-                    })
-        except FileNotFoundError:
+    def _read_source(self):
+        """Reads raw order records from SQLite database or JSON file."""
+        if not os.path.exists(self.filepath):
             print(f"Error: File not found at {self.filepath}")
+            sys.exit(1)
+
+        if self.filepath.endswith(".db"):
+            try:
+                conn = sqlite3.connect(self.filepath)
+                cursor = conn.cursor()
+                cursor.execute("SELECT id, customer FROM orders ORDER BY id")
+                orders_rows = cursor.fetchall()
+
+                data = []
+                for order_id, customer in orders_rows:
+                    cursor.execute(
+                        "SELECT product, price, qty FROM order_items WHERE order_id = ?",
+                        (order_id,),
+                    )
+                    items = []
+                    for product, price, qty in cursor.fetchall():
+                        parsed_qty = qty
+                        if isinstance(qty, str):
+                            try:
+                                parsed_qty = int(qty)
+                            except ValueError:
+                                try:
+                                    parsed_qty = float(qty)
+                                except ValueError:
+                                    parsed_qty = qty
+                        items.append({
+                            "product": product,
+                            "price": price,
+                            "qty": parsed_qty,
+                        })
+                    data.append({
+                        "id": order_id,
+                        "customer": customer,
+                        "items": items,
+                    })
+                conn.close()
+                return data
+            except sqlite3.Error as e:
+                print(f"Error: Invalid or corrupted database at {self.filepath}: {e}")
+                sys.exit(1)
+
+        try:
+            with open(self.filepath, "r", encoding="utf-8") as f:
+                return json.load(f)
+        except json.JSONDecodeError:
+            print(f"Error: Broken JSON file at {self.filepath}")
+            sys.exit(1)
+
+    def load_data(self):
+        """Loads orders, separating valid and rejected orders with order ID + reason."""
+        data = self._read_source()
+
+        for raw_order in data:
+            order_id = raw_order.get("id")
+            try:
+                customer = raw_order.get("customer")
+                raw_items = raw_order.get("items")
+
+                if not isinstance(raw_items, list):
+                    raise ValueError("order has no items")
+
+                items = []
+                for item in raw_items:
+                    items.append(
+                        OrderItem(
+                            item.get("product"),
+                            item.get("price"),
+                            item.get("qty"),
+                        )
+                    )
+
+                order = Order(order_id, customer, items)
+                self.orders.append(order)
+            except (ValueError, TypeError) as e:
+                self.rejected_orders.append({
+                    "id": order_id,
+                    "raw_data": raw_order,
+                    "reason": str(e),
+                })
 
     def total_revenue(self):
         """Returns the sum of all valid orders amounts."""
@@ -51,22 +110,28 @@ class OrderManager:
         return self.total_revenue() / len(self.orders)
 
     def top_customer(self):
-        """Returns the customer name with the highest total spending."""
+        """Returns the top customer formatted as 'Name (X orders, Y.YY JOD)'."""
         if not self.orders:
-            return None
-        spending = {}
+            return "None"
+        stats = {}
         for order in self.orders:
-            spending[order.customer_name] = spending.get(order.customer_name, 0) + order.total_amount()
-        return max(spending, key=spending.get)
+            if order.customer not in stats:
+                stats[order.customer] = {"count": 0, "total": 0.0}
+            stats[order.customer]["count"] += 1
+            stats[order.customer]["total"] += order.total_amount()
+
+        top_name = max(stats, key=lambda c: (stats[c]["total"], stats[c]["count"]))
+        return f"{top_name} ({stats[top_name]['count']} orders, {stats[top_name]['total']:.2f} JOD)"
 
     def most_popular_product(self):
-        """Returns the product name with the highest total quantity sold."""
+        """Returns the best-selling product formatted as 'Product (X units)'."""
         if not self.orders:
-            return None
+            return "None"
         quantities = {}
         for order in self.orders:
             for item in order.items:
-                quantities[item.product_name] = quantities.get(item.product_name, 0) + item.quantity
+                quantities[item.product] = quantities.get(item.product, 0) + item.qty
         if not quantities:
-            return None
-        return max(quantities, key=quantities.get)
+            return "None"
+        best_prod = max(quantities, key=quantities.get)
+        return f"{best_prod} ({quantities[best_prod]} units)"
